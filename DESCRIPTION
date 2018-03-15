@@ -15,5 +15,7 @@ Depends:
    downloader,
    magrittr,
    purrr,
-   readr
+   readr,
+   stringr,
+   tidyr
    
