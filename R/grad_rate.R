@@ -32,8 +32,9 @@ tidy_grad_rate <- function(df) {
  #get rid of the ending year in variable names, eg. _1011
  names(df) <-  gsub('_\\d\\d\\d\\d$', '', names(df))
 
- #get rid of "date_cur"
+ #get rid of "date_cur" "insert_date"
  df$date_cur <- NULL
+ df$insert_date <- NULL
 
  #deal with suppression rules. GE is >=, LE is <=, GT is >, LT is <, PS is suppressed
  rate_cols <- grepl('_rate', names(df))
@@ -75,3 +76,11 @@ fetch_grad_rate <- function(end_year) {
     tidy_grad_rate()
 }
 
+# fetch_grad_rate_for_all_years by using the following code
+
+all_years <- map(
+  .x = c(2011:2016),
+  .f = fetch_grad_rate
+)
+
+all_years <- do.call(rbind, all_years)
