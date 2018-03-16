@@ -44,13 +44,14 @@ tidy_grad_rate <- function(df) {
  rate_df <- rate_df %>%
    mutate_all(
      function(x) {
-       #for greater than/ less than, drop the string, leave the number
+#for greater than/ less than, drop the string, leave the number
        x <- gsub('GE|LE|GT|LT', '', x)
+#for suppressed "PS", replac with NA
        x <- gsub('PS', NA_character_, x)
        x
      }
    )
-
+#for range value 10-19, 15-20, calculate the mean of the range
  rate_df$all_rate <-  unlist(map(strsplit(rate_df$all_rate, "-"), cal_mean))
  rate_df$mam_rate <-  unlist(map(strsplit(rate_df$mam_rate, "-"), cal_mean))
  rate_df$mas_rate <-  unlist(map(strsplit(rate_df$mas_rate, "-"), cal_mean))
@@ -62,12 +63,13 @@ tidy_grad_rate <- function(df) {
  rate_df$ecd_rate <-  unlist(map(strsplit(rate_df$ecd_rate, "-"), cal_mean))
  rate_df$lep_rate <-  unlist(map(strsplit(rate_df$lep_rate, "-"), cal_mean))
 
+#bind rate variables and count variables togather
  df <- bind_cols(constant_df, rate_df)
 
  return(df)
 }
 
-
+#combine the get_raw and tidy function into one function
 fetch_grad_rate <- function(end_year) {
   get_raw_grad_rate(end_year) %>%
     tidy_grad_rate()
