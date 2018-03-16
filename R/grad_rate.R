@@ -39,6 +39,7 @@ tidy_grad_rate <- function(df) {
  rate_cols <- grepl('_rate', names(df))
  constant_df <- df[, !rate_cols]
  rate_df <- df[, rate_cols]
+ cal_mean <- function(x)mean(as.numeric(x))
 
  rate_df <- rate_df %>%
    mutate_all(
@@ -50,29 +51,18 @@ tidy_grad_rate <- function(df) {
      }
    )
 
+ rate_df$all_rate <-  unlist(map(strsplit(rate_df$all_rate, "-"), cal_mean))
+ rate_df$mam_rate <-  unlist(map(strsplit(rate_df$mam_rate, "-"), cal_mean))
+ rate_df$mas_rate <-  unlist(map(strsplit(rate_df$mas_rate, "-"), cal_mean))
+ rate_df$mbl_rate <-  unlist(map(strsplit(rate_df$mbl_rate, "-"), cal_mean))
+ rate_df$mhi_rate <-  unlist(map(strsplit(rate_df$mhi_rate, "-"), cal_mean))
+ rate_df$mtr_rate <-  unlist(map(strsplit(rate_df$mtr_rate, "-"), cal_mean))
+ rate_df$mwh_rate <-  unlist(map(strsplit(rate_df$mwh_rate, "-"), cal_mean))
+ rate_df$cwd_rate <-  unlist(map(strsplit(rate_df$cwd_rate, "-"), cal_mean))
+ rate_df$ecd_rate <-  unlist(map(strsplit(rate_df$ecd_rate, "-"), cal_mean))
+ rate_df$lep_rate <-  unlist(map(strsplit(rate_df$lep_rate, "-"), cal_mean))
+
  df <- bind_cols(constant_df, rate_df)
-
- extract_mean <- function(df, s) {
-   df <- df %>% separate(s, "-", into=c("first", "second"))
-
-   df$first <- as.numeric(df$first)
-   df$second <- as.numeric(df$second)
-
-   df$mean <- ifelse(!is.na(df$second),
-                     (df$first + df$second)/2,
-                     df$first)
-   df %>% select(-first, -second)
- }
- extract_mean(df, 'all_rate')
-
-  df %>%
-    mutate_at(
-      c('all_rate'),
-      extract_mean
-    )
-
- #calculate the midpoint for suppressed data with a range, eg. 70-75
- df[rate,] <- lapply(df[rate,], extract.mean)
 
  return(df)
 }
